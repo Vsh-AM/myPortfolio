@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>V.A.Mannage — Interactive Resume</title>
+
+ <!-- EmailJS SDK v3 -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script type="text/javascript">
+  // Initialize with your EmailJS user ID
+  emailjs.init("MCdMUNKZxwBmphHr8");
+</script>
+
+
+
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg1: #fff7ff;
+      --bg2: #f0f8ff;
+      --accent1: #caa7ff;
+      --accent2: #ffd6e8;
+      --glass: rgba(255,255,255,0.55);
+      --glass-border: rgba(255,255,255,0.6);
+      --text: #222;
+      --muted: #556;
+      --card-shadow: 0 6px 18px rgba(16,16,30,0.08);
+      --radius: 14px;
+    }
+
+    /* Dark mode vars */
+    :root.dark{
+      --bg1: #0f1226;
+      --bg2: #0b0d16;
+      --accent1: #7b6bff;
+      --accent2: #2b2a3a;
+      --glass: rgba(255,255,255,0.03);
+      --glass-border: rgba(255,255,255,0.06);
+      --text: #e9eef8;
+      --muted: #aeb6c4;
+      --card-shadow: 0 6px 28px rgba(0,0,0,0.6);
+    }
+
+    /* basic resets */
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+      color:var(--text);
+      background: linear-gradient(120deg,var(--bg1),var(--bg2));
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      transition: background 0.6s ease, color 0.4s ease;
+      overflow-x:hidden;
+    }
+
+    /* animated pastel background */
+    .animated-bg{
+      position:fixed;
+      inset:0;
+      z-index:-1;
+      background: radial-gradient(600px 400px at 10% 20%, rgba(202,167,255,0.18), transparent),
+                  radial-gradient(500px 350px at 85% 80%, rgba(255,214,232,0.14), transparent),
+                  radial-gradient(350px 300px at 50% 50%, rgba(168,142,232,0.08), transparent);
+      filter: blur(20px);
+      animation: float 12s ease-in-out infinite;
+      pointer-events:none;
+      transition: opacity 0.5s;
+    }
+    @keyframes float{
+      0%{transform:translateY(0) rotate(0deg)}
+      50%{transform:translateY(18px) rotate(2deg)}
+      100%{transform:translateY(0) rotate(0deg)}
+    }
+
+    /* Layout */
+    .container{max-width:1100px;margin:0 auto;padding:28px}
+    header{
+      display:flex;align-items:center;justify-content:space-between;
+      gap:16px;padding:12px 0;
+    }
+
+    /* brand */
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{
+      width:48px;height:48px;border-radius:12px;
+      background:linear-gradient(135deg,var(--accent1),var(--accent2));
+      display:grid;place-items:center;color:white;font-weight:700;
+      box-shadow: var(--card-shadow);
+    }
+    .brand h1{font-size:16px;margin:0}
+    .brand p{margin:0;font-size:12px;color:var(--muted)}
+
+    /* nav / sidebar toggle */
+    nav{display:flex;align-items:center;gap:12px}
+    .nav-links{display:flex;gap:12px;align-items:center}
+    .nav-links a{text-decoration:none;color:var(--text);font-weight:500;padding:8px 12px;border-radius:10px}
+    .nav-links a:hover{background:var(--glass);border:1px solid var(--glass-border)}
+
+    .icon-btn{
+      background:transparent;border:1px solid var(--glass-border);padding:8px;border-radius:10px;cursor:pointer;
+      display:inline-flex;align-items:center;gap:8px;
+    }
+
+    /* hero */
+    .hero{
+      display:grid;grid-template-columns:1fr 360px;gap:26px;align-items:center;margin-top:20px;
+    }
+    .hero-card{
+      background:var(--glass);
+      border-radius:var(--radius);
+      padding:26px;
+      box-shadow:var(--card-shadow);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(6px) saturate(120%);
+      transform:translateY(6px);
+    }
+    .hero h2{margin:0;font-size:28px}
+    .hero p{color:var(--muted);margin-top:8px}
+
+    .hero-cta{display:flex;gap:12px;margin-top:18px}
+    .btn{padding:10px 16px;border-radius:999px;border:none;cursor:pointer;font-weight:600}
+    .btn-primary{background:linear-gradient(90deg,var(--accent1),#d0b6ff);color:white;box-shadow:0 8px 20px rgba(102,60,255,0.12)}
+    .btn-ghost{background:transparent;border:1px solid var(--glass-border)}
+
+    .profile{
+      text-align:center;padding:18px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.36),transparent);
+      border:1px solid var(--glass-border);
+    }
+    .profile img{width:120px;height:120px;border-radius:999px;object-fit:cover;border:4px solid white}
+    .profile h3{margin:12px 0 0 0}
+    .profile p{margin:6px 0;color:var(--muted)}
+
+    /* sections */
+    section{margin-top:28px}
+    .section-grid{display:grid;grid-template-columns:1fr 420px;gap:24px;align-items:start}
+    @media (max-width:1000px){.hero{grid-template-columns:1fr} .section-grid{grid-template-columns:1fr}}
+    @media (max-width:700px){.nav-links{display:none}}
+
+    /* timeline */
+    .timeline{
+      position:relative;padding:10px 0;
+    }
+    .timeline::before{
+      content:"";position:absolute;left:18px;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--accent1),transparent);
+      border-radius:10px;opacity:0.9;
+    }
+    .event{position:relative;padding:12px 12px 12px 60px;margin-bottom:14px;background:transparent}
+    .event .marker{position:absolute;left:10px;top:18px;width:14px;height:14px;border-radius:50%;background:var(--accent1);box-shadow:0 4px 12px rgba(142,98,255,0.18)}
+    .event h4{margin:0 0 6px 0}
+    .event p{margin:0;color:var(--muted)}
+
+    /* skills */
+    .skill{
+      margin-bottom:12px;
+    }
+    .skill .name{display:flex;justify-content:space-between;font-weight:600;margin-bottom:6px}
+    .bar{height:12px;background:linear-gradient(90deg, rgba(0,0,0,0.06), rgba(0,0,0,0.02));border-radius:999px;padding:2px}
+    .bar > .fill{height:8px;border-radius:999px;background:linear-gradient(90deg,var(--accent1),#fbc7f6);width:0;transition:width 1.6s cubic-bezier(.2,.9,.2,1)}
+
+    /* projects + cards */
+    .card{background:var(--glass);border-radius:12px;padding:14px;border:1px solid var(--glass-border);box-shadow:var(--card-shadow);transition:transform .25s}
+    .card:hover{transform:translateY(-6px)}
+    .projects{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+    @media(max-width:700px){.projects{grid-template-columns:1fr}}
+
+    .project-thumb{height:140px;border-radius:10px;background:linear-gradient(135deg,#ffeaf4,#e6f0ff);display:flex;align-items:center;justify-content:center;font-weight:700;color:#6b5db0}
+
+    /* certificates */
+    .cert-grid{display:flex;flex-wrap:wrap;gap:10px}
+    .cert{min-width:150px;padding:10px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.18),transparent);border:1px solid var(--glass-border)}
+
+    /* contact form */
+    form{display:grid;gap:8px}
+    input,textarea{padding:10px;border-radius:10px;border:1px solid var(--glass-border);background:transparent;color:var(--text);outline:none}
+    textarea{min-height:110px;resize:vertical}
+    .muted{color:var(--muted);font-size:13px}
+
+    /* footer */
+    footer{margin-top:36px;padding:30px 0;text-align:center;color:var(--muted)}
+
+    /* small helpers */
+    .flex{display:flex;gap:12px;align-items:center}
+    .space{height:30px}
+
+    /* fade-in animation helper */
+    .reveal{opacity:0;transform:translateY(12px);transition:opacity .8s ease, transform .8s ease}
+    .reveal.visible{opacity:1;transform:none}
+
+    /* mobile bottom nav */
+    .mobile-bar{display:none;position:fixed;left:50%;transform:translateX(-50%);bottom:14px;background:var(--glass);padding:8px 12px;border-radius:999px;border:1px solid var(--glass-border)}
+    @media (max-width:700px){.mobile-bar{display:flex;gap:8px}}
+  </style>
+</head>
+<body>
+
+  <div class="animated-bg" aria-hidden="true"></div>
+
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo">VA</div>
+        <div>
+          <h1 style="font-size:14px;margin:0">V.A.Mannage</h1>
+          <p style="margin:0">Aspiring Software Engineer • ICT • Web Dev</p>
+        </div>
+      </div>
+
+      <nav>
+        <div class="nav-links">
+          <a href="#about">About</a>
+          <a href="#skills">Skills</a>
+          <a href="#projects">Projects</a>
+          <a href="#certs">Certs</a>
+          <a href="#contact">Contact</a>
+        </div>
+
+        <button id="themeToggle" class="icon-btn" title="Toggle light/dark">
+          🌙
+        </button>
+
+        <a id="downloadLink" class="btn btn-primary" href="assets/vishviAmayaCV.pdf" download>
+  Download CV
+</a>
+
+        <!-- mobile hamburger -->
+        <button id="openMenu" class="icon-btn" style="display:none">☰</button>
+      </nav>
+    </header>
+
+    <!-- HERO -->
+    <main>
+      <section class="hero" id="about">
+        <div class="hero-card card reveal">
+          <h2>Hello — I'm <span style="color:var(--accent1)">V.A.Mannage</span></h2>
+          <p>I'm a student at Rajarata University of Sri Lanka (B.Sc.ICT), building web apps and learning systems design. I love clean code, and solving problems.</p>
+
+          <div class="hero-cta">
+            <a class="btn btn-primary" href="#projects">View Projects</a>
+            <button class="btn btn-ghost" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Contact Me</button>
+          </div>
+
+          <div style="margin-top:18px;color:var(--muted);font-size:13px">
+            <strong>Location:</strong> Sri Lanka • <strong>Studying:</strong>Information & Communication Technology • <strong>Interests:</strong> Web Development, UI/UX, AI
+          </div>
+        </div>
+        
+        <aside class="profile card reveal">
+          <!-- Replace with your photo in assets/ -->
+          <img src="assets/prof.jpg" alt="Your photo" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=&#39;http://www.w3.org/2000/svg&#39; width=&#39;200&#39; height=&#39;200&#39;><rect width=&#39;100%&#39; height=&#39;100%&#39; fill=&#39;#f0f0f0&#39; /><text x=50% y=50% dominant-baseline=middle text-anchor=middle fill=&#39;#6b5db0&#39; font-family=&#39;Poppins&#39; font-size=24>Your Photo</text></svg>'" />
+          <h3>V.A.Mannage</h3>
+          <p class="muted">Frontend</p>
+
+          <div style="margin-top:12px" class="flex">
+            <a href="https://github.com/Vsh-AM" target="_blank" title="GitHub" aria-label="GitHub" style="text-decoration:none">
+              <!-- Simple inline GitHub SVG -->
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 .5C5.65.5.5 5.64.5 12c0 5.09 3.29 9.4 7.86 10.93.57.1.78-.25.78-.55 0-.27-.01-1.16-.02-2.1-3.2.7-3.87-1.54-3.87-1.54-.52-1.34-1.26-1.7-1.26-1.7-1.03-.7.08-.69.08-.69 1.14.08 1.74 1.17 1.74 1.17 1.01 1.73 2.65 1.23 3.3.94.1-.74.4-1.23.73-1.51-2.56-.29-5.25-1.28-5.25-5.7 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.45.11-3.02 0 0 .98-.31 3.2 1.18a11.2 11.2 0 0 1 2.91-.39c.99.01 2 .13 2.91.39 2.22-1.5 3.19-1.18 3.19-1.18.63 1.57.23 2.73.12 3.02.74.82 1.18 1.84 1.18 3.1 0 4.43-2.7 5.4-5.27 5.69.41.36.77 1.07.77 2.16 0 1.56-.01 2.81-.01 3.19 0 .3.2.66.79.55A10.52 10.52 0 0 0 23.5 12C23.5 5.64 18.35.5 12 .5z" fill="currentColor"/></svg>
+            </a>
+            <a href="https://www.linkedin.com/in/vishvi-amaya-989bba318/" target="_blank" title="LinkedIn" aria-label="LinkedIn" style="text-decoration:none">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M4.98 3.5a2.5 2.5 0 11-.002 5.001A2.5 2.5 0 014.98 3.5zM3 9h4v12H3zM9 9h3.8v1.64h.05c.53-.99 1.82-2.04 3.75-2.04C21 8.6 22 10.6 22 14.1V21h-4v-6.1c0-1.46-.03-3.34-2.03-3.34-2.03 0-2.34 1.58-2.34 3.22V21H9z" fill="currentColor"/></svg>
+            </a>
+            <a href="https://www.instagram.com/___vishu_ama___/" target="_blank" title="Instagram" aria-label="Instagram" style="text-decoration:none"> <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M7 2h10a5 5 0 015 5v10a5 5 0 01-5 5H7a5 5 0 01-5-5V7a5 5 0 015-5zm5 6.5A4.5 4.5 0 107 13a4.5 4.5 0 005-4.5zM18.5 6a1 1 0 11-.001 2.001A1 1 0 0118.5 6z" fill="currentColor"/></svg> 
+            </a>
+          </div>
+        </aside>
+      </section>
+
+      <!-- MAIN SECTIONS -->
+      <section class="section-grid">
+        <!-- left column -->
+        <div>
+          <div class="card reveal" id="education">
+            <h3 style="margin-top:0">Education</h3>
+            <div class="timeline">
+              <div class="event">
+                <div class="marker"></div>
+                <h4>BSc — Rajarata University (2025 - Present)</h4>
+                <p class="muted">Information & Communication Technology</p>
+              </div>
+
+              <div class="event">
+                <div class="marker"></div>
+                <h4>Diploma in HRM</h4>
+                <p class="muted">iHRM Institute</p>
+              </div>
+
+              <div class="event">
+                <div class="marker"></div>
+                <h4>Advanced Level — Art Stream (2022 - 2024)</h4>
+                <p class="muted">Strong focus on ICT Logic and Scientific Method and Japanese.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="space"></div>
+
+          <div class="card reveal" id="skills">
+            <h3 style="margin-top:0">Skills</h3>
+
+            <div class="skill">
+              <div class="name"><span>HTML / CSS</span><span class="muted">90%</span></div>
+              <div class="bar"><div class="fill" data-fill="90%"></div></div>
+            </div>
+
+            <div class="skill">
+              <div class="name"><span>JavaScript</span><span class="muted">75%</span></div>
+              <div class="bar"><div class="fill" data-fill="75%"></div></div>
+            </div>
+          </div>
+
+          <div class="space"></div>
+
+          <div class="card reveal" id="projects">
+            <h3 style="margin-top:0">Projects</h3>
+            <div class="projects">
+              <div class="card">
+                <div class="project-thumb">Portfolio Website</div>
+                <p style="margin:8px 0 0 0" class="muted">A modern responsive portfolio built with HTML/CSS &amp; a little JS. Hosted on GitHub Pages.</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- right column -->
+        <div>
+          <div class="card reveal" id="certs">
+            <h3 style="margin-top:0">Certificates & Badges</h3>
+            <div class="cert-grid">
+              <div class="cert">HRM Diploma Certificate</div>
+              
+            </div>
+          </div>
+
+          <div class="space"></div>
+
+          <div class="card reveal" id="contact">
+            <h3 style="margin-top:0">Contact</h3>
+            <p class="muted">
+              Want to chat? Fill out this form and your message will be sent directly to my inbox.
+            </p>
+
+            <form id="contactForm">
+              <input type="text" id="name" placeholder="Your name" required />
+              <input type="email" id="email" placeholder="Your email" required />
+              <input type="text" id="subject" placeholder="Subject" />
+              <textarea id="message" placeholder="Message..." required></textarea>
+              <button type="submit" class="btn btn-primary">Send message</button>
+            </form>
+
+            <div style="margin-top:12px" class="muted">Or email directly: <a href="mailto:amavishvi2003@gmail.com">amavishvi2003@gmail.com</a></div>
+          </div>
+        </div>
+      </section>
+
+      <footer class="reveal card" style="margin-top:26px">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+          <div class="muted">© <strong>Vishvi Amaya</strong> — Built with ❤️ • <span id="year"></span></div>
+          <div class="flex muted">
+            <div>Made for GitHub Pages</div>
+          </div>
+        </div>
+      </footer>
+    </main>
+  </div>
+
+  <!-- mobile mini nav -->
+  <div class="mobile-bar" aria-hidden="true">
+    <a href="#projects" class="icon-btn">Projects</a>
+    <a href="#contact" class="icon-btn">Contact</a>
+    <a href="assets/CV_YourName.pdf" download class="icon-btn">CV</a>
+  </div>
+
+  <script>
+    // set year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // theme toggle
+    const root = document.documentElement;
+    const themeToggle = document.getElementById('themeToggle');
+    // init theme from localStorage or prefers-color-scheme
+    const saved = localStorage.getItem('theme');
+    if(saved === 'dark' || (!saved && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)){
+      root.classList.add('dark');
+      themeToggle.textContent = '☀️';
+    } else {
+      themeToggle.textContent = '🌙';
+    }
+
+    themeToggle.addEventListener('click', () => {
+      if(root.classList.contains('dark')){
+        root.classList.remove('dark');
+        localStorage.setItem('theme','light');
+        themeToggle.textContent = '🌙';
+      } else {
+        root.classList.add('dark');
+        localStorage.setItem('theme','dark');
+        themeToggle.textContent = '☀️';
+      }
+    });
+
+    // smooth scrolling for nav links
+    document.querySelectorAll('a[href^="#"]').forEach(a=>{
+      a.addEventListener('click', e=>{
+        e.preventDefault();
+        const id = a.getAttribute('href').slice(1);
+        const el = document.getElementById(id);
+        if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+      });
+    });
+
+    // animate on scroll (IntersectionObserver)
+    const reveals = document.querySelectorAll('.reveal');
+    const obs = new IntersectionObserver((entries, observer)=>{
+      entries.forEach(entry=>{
+        if(entry.isIntersecting){
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, {threshold: 0.12});
+    reveals.forEach(r => obs.observe(r));
+
+    // animate skill bars when visible
+    const fills = document.querySelectorAll('.fill');
+    const fillObs = new IntersectionObserver((entries, o)=>{
+      entries.forEach(en=>{
+        if(en.isIntersecting){
+          const el = en.target;
+          el.style.width = el.getAttribute('data-fill');
+          o.unobserve(el);
+        }
+      });
+    }, {threshold:0.25});
+    fills.forEach(f => fillObs.observe(f));
+
+    
+    document.getElementById('contactForm').addEventListener('submit', function(e){
+      e.preventDefault(); // Prevent page reload
+
+  const name = document.getElementById('name').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const subject = document.getElementById('subject').value.trim() || 'Contact from website';
+  const message = document.getElementById('message').value.trim();
+
+  if(!name || !email || !message){
+    alert('Please fill in all required fields!');
+    return;
+  }
+
+  const templateParams = {
+    from_name: name,
+    from_email: email,
+    subject: subject,
+    message: message
+  };
+
+  console.log('Sending EmailJS message with params:', templateParams);
+
+  emailjs.send('service_ppaczbk', 'template_rc87gwk', templateParams)
+    .then(function(response) {
+      console.log('EmailJS Success:', response);
+      alert('✅ Message sent successfully!');
+      document.getElementById('contactForm').reset();
+    }, function(error) {
+      console.error('EmailJS Error:', error);
+
+      // Detailed error message
+      let msg = '❌ Failed to send message.';
+      if(error.status && error.text){
+        msg += `\nStatus: ${error.status}\nDetails: ${error.text}`;
+      }
+      alert(msg);
+    });
+});
+
+
+
+    // graceful fallback: if cv not present, show alert on download click
+    const downloadLink = document.getElementById('downloadLink');
+    downloadLink.addEventListener('click', function(e){
+      // check by trying to fetch the pdf (but we don't want to block): do a HEAD check using fetch if available
+      const url = downloadLink.getAttribute('href');
+      fetch(url, {method:'HEAD'}).then(r=>{
+        if(!r.ok) {
+          e.preventDefault();
+          alert('CV file not found. Please upload your CV to "assets/CV_YourName.pdf" in the repo.');
+        }
+      }).catch(()=> {
+        // network/blocked on GH pages sometimes — allow link to proceed
+      });
+    });
+
+    // Accessibility improvement: keyboard focus style
+    document.addEventListener('keydown', (e)=>{
+      if(e.key === 'Tab') document.documentElement.style.scrollBehavior = 'smooth';
+    }, {once:true});
+  </script>
+</body>
+</html>
